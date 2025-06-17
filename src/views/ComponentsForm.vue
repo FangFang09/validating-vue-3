@@ -72,6 +72,7 @@
 <script setup>
 import { ref } from "vue";
 import { useField, useForm } from "vee-validate";
+import { object, string, number, boolean } from "yup";
 
 const categories = ref([
   "sustainability",
@@ -83,42 +84,15 @@ const categories = ref([
   "community",
 ]);
 
-const required = (value) => {
-  const requiredMessage = "This field is required";
-  if (value === undefined || value === null) return requiredMessage;
-  if (!String(value).length) return requiredMessage;
-
-  return true;
-};
-
-const minLength = (number, value) => {
-  if (String(value).length < number)
-    return "Please type at least " + number + " characters";
-
-  return true;
-};
-
-const anything = () => {
-  return true;
-};
-
-const validationSchema = {
-  category: required,
-  title: (value) => {
-    const req = required(value);
-    if (req !== true) return req;
-
-    const min = minLength(3, value);
-    if (min !== true) return min;
-
-    return true;
-  },
-  description: anything,
-  location: undefined,
-  pets: anything,
-  catering: anything,
-  music: anything,
-};
+const validationSchema = object({
+  category: string().required(),
+  title: string().required("a cool title is required!").min(3),
+  description: string(),
+  location: string(),
+  pets: number(),
+  catering: boolean(),
+  music: boolean(),
+});
 
 const { handleSubmit, errors } = useForm({
   validationSchema,
